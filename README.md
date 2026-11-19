@@ -8,7 +8,7 @@ Toolkit de **enumeración / footprinting** en Python 3.11+ para reconocimiento a
 
 - Python 3.11+
 - Dependencias: ver `requirements.txt` (`rich`, `dnspython`, `impacket`, `pymysql`, …)
-- Herramientas opcionales en PATH (`nmap`, `smbclient`, `smbmap`, `rpcclient`, `enum4linux-ng`, …): si faltan, el módulo avisa con rich y salta ese check
+- Herramientas opcionales en PATH (`nmap`, `smbclient`, `smbmap`, `rpcclient`, `enum4linux-ng`, `rpcinfo`, `showmount`, …): si faltan, el módulo avisa con rich y salta ese check
 
 ```bash
 python3 -m venv .venv
@@ -26,11 +26,13 @@ footprinting-toolkit/
 │   └── parser.py           # reports JSON/MD, --latest, nmap ports, tables
 ├── modules/
 │   ├── ftp_enum.py
-│   └── smb_enum.py
+│   ├── smb_enum.py
+│   └── nfs_enum.py
 ├── reports/                # Salida generada (no se versiona)
 ├── docs/
 │   └── cheatsheets/
-│       └── smb.md
+│       ├── smb.md
+│       └── nfs.md
 ├── requirements.txt
 ├── LICENSE                 # MIT
 ├── .gitignore
@@ -45,12 +47,14 @@ Cada módulo expone `register_parser(parser)` y `run(args)`. `main.py` solo desc
 # Vía main.py (subcommand = nombre sin _enum)
 python3 main.py ftp 10.10.10.10 --dry-run
 python3 main.py smb 10.10.10.10 --dry-run
-python3 main.py smb -t 10.10.10.10 --port 445
+python3 main.py nfs 10.10.10.10 --dry-run
+python3 main.py nfs --latest
+python3 main.py nfs 10.10.10.10 --mount-check
 
 # Directo
 python3 modules/ftp_enum.py 10.10.10.10 --dry-run
 python3 modules/smb_enum.py 10.10.10.10 --dry-run
-python3 modules/smb_enum.py 10.10.10.10 --user alice --password 'Secret' --domain CORP
+python3 modules/nfs_enum.py 10.10.10.10 --dry-run
 ```
 
 Flags comunes: `target` posicional, `-t`/`--target`, `--port`, `--timeout`, `--dry-run`, `--latest`, `-o`/`--output`.
@@ -66,6 +70,15 @@ Flags comunes: `target` posicional, `-t`/`--target`, `--port`, `--timeout`, `--d
 - `smbclient` / `smbmap` null+guest (y auth opcional con `--user`/`--password`/`--domain`)
 - `rpcclient` null enum (usuarios + RIDs), `enum4linux-ng`, nmap `smb-enum-*`
 - Cheatsheet: [docs/cheatsheets/smb.md](docs/cheatsheets/smb.md)
+
+### Módulo `nfs`
+
+- Puertos 111/2049 (`--port` def. 2049)
+- nmap `rpcinfo,nfs-ls,nfs-showmount,nfs-statfs`
+- `rpcinfo -p` (finding si nfs/mountd/nlockmgr) y `showmount -e` (finding si export a `*`/everyone)
+- `--mount-check`: montaje RO + `ls -ln` + umount en `finally` (requiere root; no escribe)
+- `--latest` recupera puertos abiertos del último reporte discovery
+- Cheatsheet: [docs/cheatsheets/nfs.md](docs/cheatsheets/nfs.md)
 
 ## Core
 
