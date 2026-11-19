@@ -1,0 +1,22 @@
+# Cursor (local rules / IDE) — never commit
+.cursor/
+
+# Generated scan reports — never commit
+reports/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+.env
+.Python
+dist/
+build/
+
+# OS / editor
+.DS_Store
+*.swp
+*~
