@@ -8,7 +8,7 @@ Toolkit de **enumeración / footprinting** en Python 3.11+ para reconocimiento a
 
 - Python 3.11+
 - Dependencias: ver `requirements.txt` (`rich`, `dnspython`, `impacket`, `pymysql`, …)
-- Herramientas opcionales en PATH (`nmap`, `dig`, `openssl`, …): si faltan, el módulo avisa con rich y salta ese check
+- Herramientas opcionales en PATH (`nmap`, `dig`, `openssl`, `onesixtyone`, `snmpwalk`, …): si faltan, el módulo avisa con rich y salta ese check
 
 ```bash
 python3 -m venv .venv
@@ -24,8 +24,8 @@ footprinting-toolkit/
 ├── core/ runner.py, parser.py
 ├── modules/
 │   ├── ftp_enum.py | smb_enum.py | nfs_enum.py
-│   ├── dns_enum.py | smtp_enum.py | mail_enum.py
-├── docs/cheatsheets/  smb.md nfs.md dns.md smtp.md mail.md
+│   ├── dns_enum.py | smtp_enum.py | mail_enum.py | snmp_enum.py
+├── docs/cheatsheets/  smb.md nfs.md dns.md smtp.md mail.md snmp.md
 ├── reports/
 ├── requirements.txt | LICENSE | .gitignore | README.md
 ```
@@ -35,10 +35,10 @@ Cada módulo: `register_parser(parser)` + `run(args)`. Checks `{check, command, 
 ## Uso
 
 ```bash
-python3 main.py mail 10.10.10.10 --dry-run
-python3 modules/mail_enum.py 10.10.10.10 --dry-run
-python3 main.py mail 10.10.10.10 --protocol imap --ports 143,993
-python3 main.py smtp 10.10.10.10 --dry-run
+python3 main.py snmp 10.10.10.10 --dry-run
+python3 modules/snmp_enum.py 10.10.10.10 --dry-run
+python3 main.py snmp 10.10.10.10 --communities comms.txt --retries 3
+python3 main.py mail 10.10.10.10 --protocol imap
 python3 main.py dns 10.10.10.10 --domain corp.local
 ```
 
@@ -49,9 +49,10 @@ python3 main.py dns 10.10.10.10 --domain corp.local
 | `ftp` | 21 | Banner, anónimo, nmap FTP |
 | `smb` | 139/445 | [cheatsheet](docs/cheatsheets/smb.md) |
 | `nfs` | 111/2049 | [cheatsheet](docs/cheatsheets/nfs.md) |
-| `dns` | 53 | `--domain` salvo dry-run; [cheatsheet](docs/cheatsheets/dns.md) |
-| `smtp` | 25/465/587 | Open-relay sin DATA; [cheatsheet](docs/cheatsheets/smtp.md) |
-| `mail` | 110/143/993/995 | IMAP/POP3; sin login anónimo; [cheatsheet](docs/cheatsheets/mail.md) |
+| `dns` | 53 | [cheatsheet](docs/cheatsheets/dns.md) |
+| `smtp` | 25/465/587 | [cheatsheet](docs/cheatsheets/smtp.md) |
+| `mail` | 110/143/993/995 | [cheatsheet](docs/cheatsheets/mail.md) |
+| `snmp` | 161/udp | communities, walks, OIDs; [cheatsheet](docs/cheatsheets/snmp.md) |
 
 ## Licencia
 
