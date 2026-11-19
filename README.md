@@ -8,7 +8,7 @@ Toolkit de **enumeración / footprinting** en Python 3.11+ para reconocimiento a
 
 - Python 3.11+
 - Dependencias: ver `requirements.txt` (`rich`, `dnspython`, `impacket`, `pymysql`, …)
-- Herramientas opcionales en PATH (`nmap`, `dig`, `openssl`, `onesixtyone`, `snmpwalk`, …)
+- Herramientas opcionales en PATH (`nmap`, `tnscmd10g`, `odat`, …)
 
 ```bash
 python3 -m venv .venv
@@ -25,7 +25,8 @@ footprinting-toolkit/
 ├── modules/
 │   ├── ftp_enum.py | smb_enum.py | nfs_enum.py | dns_enum.py
 │   ├── smtp_enum.py | mail_enum.py | snmp_enum.py | db_enum.py
-├── docs/cheatsheets/  … db.md
+│   └── oracle_enum.py
+├── docs/cheatsheets/  … oracle.md
 ├── reports/
 ├── requirements.txt | LICENSE | .gitignore | README.md
 ```
@@ -35,10 +36,9 @@ Cada módulo: `register_parser(parser)` + `run(args)`. Checks `{check, command, 
 ## Uso
 
 ```bash
-python3 main.py db 10.10.10.10 --dry-run
-python3 modules/db_enum.py 10.10.10.10 --dry-run
-python3 main.py db 10.10.10.10 --engine mysql --user root --password 'Secret'
-python3 main.py db 10.10.10.10 --engine mssql --user sa --password 'Secret'
+python3 main.py oracle 10.10.10.10 --dry-run
+python3 modules/oracle_enum.py 10.10.10.10 --dry-run
+python3 main.py oracle 10.10.10.10 --sid ORCL --sid-wordlist sids.txt
 ```
 
 ### Módulos
@@ -52,7 +52,8 @@ python3 main.py db 10.10.10.10 --engine mssql --user sa --password 'Secret'
 | `smtp` | 25/465/587 | [cheatsheet](docs/cheatsheets/smtp.md) |
 | `mail` | 110/143/993/995 | [cheatsheet](docs/cheatsheets/mail.md) |
 | `snmp` | 161/udp | [cheatsheet](docs/cheatsheets/snmp.md) |
-| `db` | 3306 / 1433 / 1434/udp | MySQL+MSSQL; [cheatsheet](docs/cheatsheets/db.md) |
+| `db` | 3306 / 1433 / 1434/udp | [cheatsheet](docs/cheatsheets/db.md) |
+| `oracle` | 1521 | TNS/listener/SID; [cheatsheet](docs/cheatsheets/oracle.md) |
 
 ## Licencia
 
