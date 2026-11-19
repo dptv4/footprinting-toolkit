@@ -8,7 +8,7 @@ Toolkit de **enumeración / footprinting** en Python 3.11+ para reconocimiento a
 
 - Python 3.11+
 - Dependencias: ver `requirements.txt` (`rich`, `dnspython`, `impacket`, `pymysql`, …)
-- Herramientas opcionales en PATH (`nmap`, …): si faltan, el módulo avisa con rich y salta ese check
+- Herramientas opcionales en PATH (`nmap`, `smbclient`, `smbmap`, `rpcclient`, `enum4linux-ng`, …): si faltan, el módulo avisa con rich y salta ese check
 
 ```bash
 python3 -m venv .venv
@@ -25,38 +25,47 @@ footprinting-toolkit/
 │   ├── runner.py           # run_cmd, dry-run, tool/root checks
 │   └── parser.py           # reports JSON/MD, --latest, nmap ports, tables
 ├── modules/
-│   └── ftp_enum.py         # Módulo de referencia FTP
+│   ├── ftp_enum.py
+│   └── smb_enum.py
 ├── reports/                # Salida generada (no se versiona)
 ├── docs/
 │   └── cheatsheets/
+│       └── smb.md
 ├── requirements.txt
 ├── LICENSE                 # MIT
 ├── .gitignore
 └── README.md
 ```
 
-Cada módulo expone `register_parser(parser)` y `run(args)`. `main.py` solo descubre `*_enum.py` y llama a esas dos funciones (defaults en una única fuente de verdad).
+Cada módulo expone `register_parser(parser)` y `run(args)`. `main.py` solo descubre `*_enum.py` y llama a esas dos funciones (defaults en una única fuente de verdad). Cada check del reporte usa `{check, command, status, summary, raw}` con `status` ∈ `ok|fail|skipped|finding`.
 
 ## Uso
 
 ```bash
 # Vía main.py (subcommand = nombre sin _enum)
 python3 main.py ftp 10.10.10.10 --dry-run
-python3 main.py ftp -t 10.10.10.10 --port 21
+python3 main.py smb 10.10.10.10 --dry-run
+python3 main.py smb -t 10.10.10.10 --port 445
 
 # Directo
 python3 modules/ftp_enum.py 10.10.10.10 --dry-run
-python3 modules/ftp_enum.py -t 10.10.10.10 --latest
+python3 modules/smb_enum.py 10.10.10.10 --dry-run
+python3 modules/smb_enum.py 10.10.10.10 --user alice --password 'Secret' --domain CORP
 ```
 
-Flags comunes (definidos en `register_parser`): `target` posicional, `-t`/`--target`, `--latest`, más flags del módulo (`--port`, `--dry-run`, `--timeout`, `-o`/`--output`).
+Flags comunes: `target` posicional, `-t`/`--target`, `--port`, `--timeout`, `--dry-run`, `--latest`, `-o`/`--output`.
 
 ### Módulo `ftp`
 
-- Banner grabbing TCP
-- Login anónimo (`ftplib`) + `LIST`
-- `nmap --script ftp-anon,ftp-syst,ftp-bounce,ftp-vsftpd-backdoor`
-- Inferencia de escritura anónima solo desde permisos de `LIST` (sin subir ni crear archivos)
+- Banner grabbing TCP, login anónimo + `LIST`, scripts nmap FTP, write hints solo desde permisos LIST
+
+### Módulo `smb`
+
+- Puertos 139/445 (`--port` def. 445)
+- nmap discovery (finding si signing ≠ required o SMBv1)
+- `smbclient` / `smbmap` null+guest (y auth opcional con `--user`/`--password`/`--domain`)
+- `rpcclient` null enum (usuarios + RIDs), `enum4linux-ng`, nmap `smb-enum-*`
+- Cheatsheet: [docs/cheatsheets/smb.md](docs/cheatsheets/smb.md)
 
 ## Core
 
