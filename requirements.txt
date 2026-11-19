@@ -2,3 +2,4 @@ rich
 dnspython
 impacket
 pymysql
+requests

@@ -7,8 +7,8 @@ Toolkit de **enumeración / footprinting** en Python 3.11+ para reconocimiento a
 ## Requisitos
 
 - Python 3.11+
-- Dependencias: ver `requirements.txt` (`rich`, `dnspython`, `impacket`, `pymysql`, …)
-- Herramientas opcionales en PATH (`nmap`, `tnscmd10g`, `odat`, …)
+- Dependencias: ver `requirements.txt` (`rich`, `dnspython`, `impacket`, `pymysql`, `requests`, …)
+- Herramientas opcionales en PATH (`nmap`, `ssh-audit`, `nxc`, `rsync`, …)
 
 ```bash
 python3 -m venv .venv
@@ -22,11 +22,8 @@ pip install -r requirements.txt
 footprinting-toolkit/
 ├── main.py
 ├── core/ runner.py, parser.py
-├── modules/
-│   ├── ftp_enum.py | smb_enum.py | nfs_enum.py | dns_enum.py
-│   ├── smtp_enum.py | mail_enum.py | snmp_enum.py | db_enum.py
-│   └── oracle_enum.py
-├── docs/cheatsheets/  … oracle.md
+├── modules/  … remote_enum.py
+├── docs/cheatsheets/  … remote.md
 ├── reports/
 ├── requirements.txt | LICENSE | .gitignore | README.md
 ```
@@ -36,24 +33,26 @@ Cada módulo: `register_parser(parser)` + `run(args)`. Checks `{check, command, 
 ## Uso
 
 ```bash
-python3 main.py oracle 10.10.10.10 --dry-run
-python3 modules/oracle_enum.py 10.10.10.10 --dry-run
-python3 main.py oracle 10.10.10.10 --sid ORCL --sid-wordlist sids.txt
+python3 main.py remote 10.10.10.10 --dry-run
+python3 modules/remote_enum.py 10.10.10.10 --dry-run
+python3 main.py remote 10.10.10.10 --services ssh,rdp,winrm
+python3 main.py remote --latest
 ```
 
 ### Módulos
 
 | Módulo | Puertos | Notas |
 |--------|---------|--------|
-| `ftp` | 21 | Banner, anónimo, nmap FTP |
-| `smb` | 139/445 | [cheatsheet](docs/cheatsheets/smb.md) |
-| `nfs` | 111/2049 | [cheatsheet](docs/cheatsheets/nfs.md) |
-| `dns` | 53 | [cheatsheet](docs/cheatsheets/dns.md) |
-| `smtp` | 25/465/587 | [cheatsheet](docs/cheatsheets/smtp.md) |
-| `mail` | 110/143/993/995 | [cheatsheet](docs/cheatsheets/mail.md) |
-| `snmp` | 161/udp | [cheatsheet](docs/cheatsheets/snmp.md) |
-| `db` | 3306 / 1433 / 1434/udp | [cheatsheet](docs/cheatsheets/db.md) |
-| `oracle` | 1521 | TNS/listener/SID; [cheatsheet](docs/cheatsheets/oracle.md) |
+| `ftp` | 21 | Banner, anónimo |
+| `smb` | 139/445 | [smb.md](docs/cheatsheets/smb.md) |
+| `nfs` | 111/2049 | [nfs.md](docs/cheatsheets/nfs.md) |
+| `dns` | 53 | [dns.md](docs/cheatsheets/dns.md) |
+| `smtp` | 25/465/587 | [smtp.md](docs/cheatsheets/smtp.md) |
+| `mail` | 110/143/993/995 | [mail.md](docs/cheatsheets/mail.md) |
+| `snmp` | 161/udp | [snmp.md](docs/cheatsheets/snmp.md) |
+| `db` | 3306/1433/1434 | [db.md](docs/cheatsheets/db.md) |
+| `oracle` | 1521 | [oracle.md](docs/cheatsheets/oracle.md) |
+| `remote` | 22/3389/5985-6/135/873/512-514 | [remote.md](docs/cheatsheets/remote.md) |
 
 ## Licencia
 
