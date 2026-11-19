@@ -8,7 +8,7 @@ Toolkit de **enumeración / footprinting** en Python 3.11+ para reconocimiento a
 
 - Python 3.11+
 - Dependencias: ver `requirements.txt` (`rich`, `dnspython`, `impacket`, `pymysql`, …)
-- Herramientas opcionales en PATH (`nmap`, `dig`, `openssl`, `onesixtyone`, `snmpwalk`, …): si faltan, el módulo avisa con rich y salta ese check
+- Herramientas opcionales en PATH (`nmap`, `dig`, `openssl`, `onesixtyone`, `snmpwalk`, …)
 
 ```bash
 python3 -m venv .venv
@@ -23,9 +23,9 @@ footprinting-toolkit/
 ├── main.py
 ├── core/ runner.py, parser.py
 ├── modules/
-│   ├── ftp_enum.py | smb_enum.py | nfs_enum.py
-│   ├── dns_enum.py | smtp_enum.py | mail_enum.py | snmp_enum.py
-├── docs/cheatsheets/  smb.md nfs.md dns.md smtp.md mail.md snmp.md
+│   ├── ftp_enum.py | smb_enum.py | nfs_enum.py | dns_enum.py
+│   ├── smtp_enum.py | mail_enum.py | snmp_enum.py | db_enum.py
+├── docs/cheatsheets/  … db.md
 ├── reports/
 ├── requirements.txt | LICENSE | .gitignore | README.md
 ```
@@ -35,11 +35,10 @@ Cada módulo: `register_parser(parser)` + `run(args)`. Checks `{check, command, 
 ## Uso
 
 ```bash
-python3 main.py snmp 10.10.10.10 --dry-run
-python3 modules/snmp_enum.py 10.10.10.10 --dry-run
-python3 main.py snmp 10.10.10.10 --communities comms.txt --retries 3
-python3 main.py mail 10.10.10.10 --protocol imap
-python3 main.py dns 10.10.10.10 --domain corp.local
+python3 main.py db 10.10.10.10 --dry-run
+python3 modules/db_enum.py 10.10.10.10 --dry-run
+python3 main.py db 10.10.10.10 --engine mysql --user root --password 'Secret'
+python3 main.py db 10.10.10.10 --engine mssql --user sa --password 'Secret'
 ```
 
 ### Módulos
@@ -52,7 +51,8 @@ python3 main.py dns 10.10.10.10 --domain corp.local
 | `dns` | 53 | [cheatsheet](docs/cheatsheets/dns.md) |
 | `smtp` | 25/465/587 | [cheatsheet](docs/cheatsheets/smtp.md) |
 | `mail` | 110/143/993/995 | [cheatsheet](docs/cheatsheets/mail.md) |
-| `snmp` | 161/udp | communities, walks, OIDs; [cheatsheet](docs/cheatsheets/snmp.md) |
+| `snmp` | 161/udp | [cheatsheet](docs/cheatsheets/snmp.md) |
+| `db` | 3306 / 1433 / 1434/udp | MySQL+MSSQL; [cheatsheet](docs/cheatsheets/db.md) |
 
 ## Licencia
 
