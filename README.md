@@ -8,6 +8,7 @@ Toolkit de **enumeración / footprinting** en Python 3.11+ para reconocimiento a
 
 - Python 3.11+
 - Dependencias: ver `requirements.txt` (`rich`, `dnspython`, `impacket`, `pymysql`, …)
+- Herramientas opcionales en PATH (`nmap`, …): si faltan, el módulo avisa con rich y salta ese check
 
 ```bash
 python3 -m venv .venv
@@ -19,40 +20,48 @@ pip install -r requirements.txt
 
 ```text
 footprinting-toolkit/
-├── main.py                 # Entrada unificada: python3 main.py <modulo>
+├── main.py                 # Subcomandos auto-descubiertos: modules/*_enum.py
 ├── core/
 │   ├── runner.py           # run_cmd, dry-run, tool/root checks
 │   └── parser.py           # reports JSON/MD, --latest, nmap ports, tables
 ├── modules/
-│   └── <servicio>_enum.py  # p. ej. dns_enum.py, smb_enum.py
+│   └── ftp_enum.py         # Módulo de referencia FTP
 ├── reports/                # Salida generada (no se versiona)
 ├── docs/
-│   └── cheatsheets/        # Guías rápidas por servicio
+│   └── cheatsheets/
 ├── requirements.txt
 ├── LICENSE                 # MIT
 ├── .gitignore
 └── README.md
 ```
 
-## Core
+Cada módulo expone `register_parser(parser)` y `run(args)`. `main.py` solo descubre `*_enum.py` y llama a esas dos funciones (defaults en una única fuente de verdad).
 
-- `core.runner.run_cmd(cmd, timeout=120, dry_run=False)` → `CmdResult` (`cmd`, `returncode`, `stdout`, `stderr`, `duration`). Con `--dry-run` solo imprime el comando.
-- `tool_available` / `require_tools([...])`: avisan con rich si faltan binarios (`nmap`, `smbclient`, …) y **saltan** el check (no abortan).
-- `check_root()`: para escaneos privilegiados (p. ej. `nmap -sU`).
-- `core.parser.save_report` / `load_latest`: `reports/<modulo>_<target>_<timestamp>.json` (+ `.md`); `--latest` encadena módulos.
-- `render_table(results)` y `extract_open_ports(nmap_xml)` para tablas rich y puertos abiertos.
-
-## Uso (previsto)
+## Uso
 
 ```bash
-# Vía main.py
-python3 main.py dns_enum -t example.com
+# Vía main.py (subcommand = nombre sin _enum)
+python3 main.py ftp 10.10.10.10 --dry-run
+python3 main.py ftp -t 10.10.10.10 --port 21
 
 # Directo
-python3 modules/dns_enum.py example.com
+python3 modules/ftp_enum.py 10.10.10.10 --dry-run
+python3 modules/ftp_enum.py -t 10.10.10.10 --latest
 ```
 
-Ambas vías comparten `register_parser(parser)` (misma fuente de verdad para flags y defaults): `target` posicional opcional, `-t`/`--target`, `--latest`.
+Flags comunes (definidos en `register_parser`): `target` posicional, `-t`/`--target`, `--latest`, más flags del módulo (`--port`, `--dry-run`, `--timeout`, `-o`/`--output`).
+
+### Módulo `ftp`
+
+- Banner grabbing TCP
+- Login anónimo (`ftplib`) + `LIST`
+- `nmap --script ftp-anon,ftp-syst,ftp-bounce,ftp-vsftpd-backdoor`
+- Inferencia de escritura anónima solo desde permisos de `LIST` (sin subir ni crear archivos)
+
+## Core
+
+- `run_cmd` / `--dry-run`, `require_tools`, `check_root`
+- `save_report` / `load_latest`, `render_table`, `extract_open_ports`
 
 ## Licencia
 
