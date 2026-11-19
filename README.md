@@ -15,12 +15,14 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Estructura prevista
+## Estructura
 
 ```text
 footprinting-toolkit/
 ├── main.py                 # Entrada unificada: python3 main.py <modulo>
-├── core/                   # Utilidades compartidas
+├── core/
+│   ├── runner.py           # run_cmd, dry-run, tool/root checks
+│   └── parser.py           # reports JSON/MD, --latest, nmap ports, tables
 ├── modules/
 │   └── <servicio>_enum.py  # p. ej. dns_enum.py, smb_enum.py
 ├── reports/                # Salida generada (no se versiona)
@@ -31,6 +33,14 @@ footprinting-toolkit/
 ├── .gitignore
 └── README.md
 ```
+
+## Core
+
+- `core.runner.run_cmd(cmd, timeout=120, dry_run=False)` → `CmdResult` (`cmd`, `returncode`, `stdout`, `stderr`, `duration`). Con `--dry-run` solo imprime el comando.
+- `tool_available` / `require_tools([...])`: avisan con rich si faltan binarios (`nmap`, `smbclient`, …) y **saltan** el check (no abortan).
+- `check_root()`: para escaneos privilegiados (p. ej. `nmap -sU`).
+- `core.parser.save_report` / `load_latest`: `reports/<modulo>_<target>_<timestamp>.json` (+ `.md`); `--latest` encadena módulos.
+- `render_table(results)` y `extract_open_ports(nmap_xml)` para tablas rich y puertos abiertos.
 
 ## Uso (previsto)
 
