@@ -1,0 +1,6 @@
+# Local / generated — never commit
+.cursor/
+reports/
+__pycache__/
+.venv/
+*.pyc
